@@ -10,7 +10,7 @@ importlib.reload(mayaPilotUi)
 
 from . import api_key 
 importlib.reload(api_key)
-
+print("l0")
 
 def requestResFromAI(userInput):
   try:
