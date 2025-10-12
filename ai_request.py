@@ -3,19 +3,28 @@ import json
 import requests
 import importlib
 from openai import OpenAI
+<<<<<<< HEAD
 import re
+=======
+>>>>>>> 68338906208ed3c72e7db2c88595b85467af1d9e
 
 from . import mayaPilotUi
 importlib.reload(mayaPilotUi)
 
 from . import api_key 
 importlib.reload(api_key)
+<<<<<<< HEAD
 print("l0")
 
 def requestResFromAI(userInput):
   try:
     API_KEY = api_key.API_KEY
     print(API_KEY)
+=======
+
+def requestResFromAI(userInput):
+  try:
+>>>>>>> 68338906208ed3c72e7db2c88595b85467af1d9e
 
     client = OpenAI(api_key=API_KEY)
     prompt = userInput
@@ -31,6 +40,7 @@ def requestResFromAI(userInput):
   except Exception as e:
     print(" API Key ไม่ถูกต้อง หรือมีปัญหาในการเชื่อมต่อ")
 
+<<<<<<< HEAD
 
 
 def codeRequest(resText):
@@ -47,6 +57,8 @@ def codeRequest(resText):
   return code_res
 
   # ตัวแปร code_res จะเป็นเฉพาะเนื้อโค้ดภายใน code block
+=======
+>>>>>>> 68338906208ed3c72e7db2c88595b85467af1d9e
 '''
   completion = client.chat.completions.create(
       model="gpt-4o-mini",
@@ -68,4 +80,10 @@ def codeRequest(resText):
   print(f"Ai:\n\t{result}") 
   
 '''
+<<<<<<< HEAD
   
+=======
+  
+
+
+>>>>>>> 68338906208ed3c72e7db2c88595b85467af1d9e
