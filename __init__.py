@@ -1,1 +1,0 @@
-self.code_res = code_res

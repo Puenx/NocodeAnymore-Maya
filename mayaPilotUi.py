@@ -5,19 +5,12 @@ import maya.OpenMayaUI as omui
 from openai import OpenAI
 from . import api_key 
 from . import ai_request as aiReq
-<<<<<<< HEAD
 import re
 import maya.cmds as cmds
 
 importlib.reload(api_key)
 importlib.reload(aiReq)
-print(";")
-=======
 
-importlib.reload(api_key)
-importlib.reload(aiReq)
-
->>>>>>> 68338906208ed3c72e7db2c88595b85467af1d9e
 
 class mayaPilotDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -44,11 +37,6 @@ class mayaPilotDialog(QtWidgets.QDialog):
         self.transcript.setReadOnly(True)
         self.inputLayout.addWidget(self.transcript)
 
-<<<<<<< HEAD
-=======
-        #self.input = QtWidgets.QLineEdit()
-        #self.input.setPlaceholderText
->>>>>>> 68338906208ed3c72e7db2c88595b85467af1d9e
 
         self.userLayout = QtWidgets.QHBoxLayout()
         self.mainLayout.addLayout(self.userLayout)
@@ -67,10 +55,7 @@ class mayaPilotDialog(QtWidgets.QDialog):
         self.mainLayout.addLayout(self.codeLayout)
 
         self.codescript = QtWidgets.QTextEdit()
-<<<<<<< HEAD
         self.codescript.setReadOnly(True)
-=======
->>>>>>> 68338906208ed3c72e7db2c88595b85467af1d9e
         self.codeLayout.addWidget(self.codescript)
         #--------------------------------------------------------
 
@@ -88,17 +73,11 @@ class mayaPilotDialog(QtWidgets.QDialog):
         self.clearButton = QtWidgets.QPushButton('Clear')
         self.buttonLayout.addWidget(self.clearButton)
         self.runButton = QtWidgets.QPushButton('Run Code')
-<<<<<<< HEAD
         self.runButton.clicked.connect(self.runCode)
         self.buttonLayout.addWidget(self.runButton)
 
 
 
-=======
-        self.buttonLayout.addWidget(self.runButton)
-
-
->>>>>>> 68338906208ed3c72e7db2c88595b85467af1d9e
     def onClickRequestResFromAI(self): 
         userInput = self.inputLineEdit.text()
         aiReq.requestResFromAI(userInput)
@@ -122,7 +101,6 @@ class mayaPilotDialog(QtWidgets.QDialog):
 
         self._append("AI", a)
         self.inputLineEdit.clear()
-<<<<<<< HEAD
 
         resText = a
         #code_res ไปอยู่ใน self เพื่อให้ทำงานข้าม def ได้
@@ -135,8 +113,6 @@ class mayaPilotDialog(QtWidgets.QDialog):
         exec(self.code_res)
         print(self.code_res)
 
-=======
->>>>>>> 68338906208ed3c72e7db2c88595b85467af1d9e
 '''
     def on_answer(self, result):
         self._append("AI", result)
