@@ -1,14 +1,16 @@
-from PySide6 import QtCore, QtGui, QtWidgets
-from shiboken6 import wrapInstance
+from PySide2 import QtCore, QtGui, QtWidgets
+from shiboken2 import wrapInstance
 import importlib
 import maya.OpenMayaUI as omui
 from openai import OpenAI
 from . import api_key 
 from . import ai_request as aiReq
+import re
+import maya.cmds as cmds
 
 importlib.reload(api_key)
 importlib.reload(aiReq)
-
+print(";")
 
 class mayaPilotDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -35,8 +37,6 @@ class mayaPilotDialog(QtWidgets.QDialog):
         self.transcript.setReadOnly(True)
         self.inputLayout.addWidget(self.transcript)
 
-        #self.input = QtWidgets.QLineEdit()
-        #self.input.setPlaceholderText
 
         self.userLayout = QtWidgets.QHBoxLayout()
         self.mainLayout.addLayout(self.userLayout)
@@ -55,6 +55,7 @@ class mayaPilotDialog(QtWidgets.QDialog):
         self.mainLayout.addLayout(self.codeLayout)
 
         self.codescript = QtWidgets.QTextEdit()
+        self.codescript.setReadOnly(True)
         self.codeLayout.addWidget(self.codescript)
         #--------------------------------------------------------
 
@@ -72,7 +73,9 @@ class mayaPilotDialog(QtWidgets.QDialog):
         self.clearButton = QtWidgets.QPushButton('Clear')
         self.buttonLayout.addWidget(self.clearButton)
         self.runButton = QtWidgets.QPushButton('Run Code')
+        self.runButton.clicked.connect(self.runCode)
         self.buttonLayout.addWidget(self.runButton)
+
 
 
     def onClickRequestResFromAI(self): 
@@ -98,6 +101,18 @@ class mayaPilotDialog(QtWidgets.QDialog):
 
         self._append("AI", a)
         self.inputLineEdit.clear()
+
+        resText = a
+        #code_res ไปอยู่ใน self เพื่อให้ทำงานข้าม def ได้
+
+        self.code_res = aiReq.codeRequest(resText)
+        self.codescript.append(self.code_res)
+        
+
+    def runCode(self,  *arg):
+        exec(self.code_res)
+        print(self.code_res)
+
 '''
     def on_answer(self, result):
         self._append("AI", result)

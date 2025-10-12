@@ -3,6 +3,7 @@ import json
 import requests
 import importlib
 from openai import OpenAI
+import re
 
 from . import mayaPilotUi
 importlib.reload(mayaPilotUi)
@@ -31,6 +32,21 @@ def requestResFromAI(userInput):
     print(" API Key ไม่ถูกต้อง หรือมีปัญหาในการเชื่อมต่อ")
 
 
+
+def codeRequest(resText):
+
+  m = re.search(r"```python(.*?)```",
+              resText, flags=re.IGNORECASE | re.DOTALL)
+
+  if m:
+      code_res = m.group(1).strip()
+  else:
+      # ถ้าไม่เจอ ให้ fallback ไปจับ code block ใดๆ
+      code_res = "หาโค้ดไม่เจอ กรุณาลองอีกครั้ง"
+      
+  return code_res
+
+  # ตัวแปร code_res จะเป็นเฉพาะเนื้อโค้ดภายใน code block
 '''
   completion = client.chat.completions.create(
       model="gpt-4o-mini",
