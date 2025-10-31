@@ -4,3 +4,5 @@
 เปิด cmd
 พิมพ์ mayapy.exe -m pip install openai
 พิมพ์ mayapy.exe -m pip install requests
+
+ใส่ api key ในไฟล์ api_key

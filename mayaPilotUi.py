@@ -9,13 +9,12 @@ import maya.OpenMayaUI as omui
 import importlib
 from openai import OpenAI
 from . import api_key 
-from . import ai_request as aiReq
+from . import mayaPilotUtil as aiReq
 import re
 import maya.cmds as cmds
 
 importlib.reload(api_key)
 importlib.reload(aiReq)
-
 
 class mayaPilotDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -35,15 +34,6 @@ class mayaPilotDialog(QtWidgets.QDialog):
         self.mainLayout.setContentsMargins(25, 0, 25, 25)   # ไม่มีช่องว่างรอบ layout
         self.mainLayout.setSpacing(0)                    # ไม่มีช่องว่างระหว่าง widget
 
-
-        logo_text = """                               
- '|.   '|'           ..|'''.|              '||          
-  |'|   |    ...   .|'     '    ...      .. ||    ....  
-  | '|. |  .|  '|. ||         .|  '|.  .'  '||  .|...|| 
-  |   |||  ||   || '|.      . ||   ||  |.   ||  ||      
- .|.   '|   '|..|'  ''|....'   '|..|'  '|..'||.  '|...' 
-                                                        
-"""
         sub_text = """
 *******************************************************
 *******************************************************
@@ -56,11 +46,6 @@ dP     dP `88888P'  Y88888P' `88888P' `88888P8 `88888P'
 
 .-.-.-.-.-.-.-.-.-.-.-. Anymore .-.-.-.-.-.-.-.-.-.-.-.                                                                                                                   
         """
-        #self.logoLabel = QtWidgets.QLabel(logo_text)
-        #font = QtGui.QFont("Courier")
-        #font.setPointSize(8)
-        #self.logoLabel.setFont(font)
-        #self.mainLayout.addWidget(self.logoLabel)
 
         self.sublogoLabel = QtWidgets.QLabel(sub_text)
         font2 = QtGui.QFont("Courier")
@@ -93,7 +78,6 @@ dP     dP `88888P'  Y88888P' `88888P' `88888P8 `88888P'
                 padding: 0px;                 /* ระยะห่างขอบ */
                 font-size: 12pt;
                 font-weight: bold;
-
         }
         """)
         self.headerChat.setFixedHeight(25)
@@ -102,9 +86,6 @@ dP     dP `88888P'  Y88888P' `88888P' `88888P8 `88888P'
         #หน้าต่างแสดงผลการแชท
         self.transcript_Layout = QtWidgets.QVBoxLayout()
         self.mainLayout.addLayout(self.transcript_Layout)
-
-
-
 
         self.transcript = QtWidgets.QTextEdit()
         self.transcript.setReadOnly(True)
@@ -117,12 +98,10 @@ dP     dP `88888P'  Y88888P' `88888P' `88888P8 `88888P'
                 padding: 6px;                 /* ระยะห่างขอบ */
                 font-size: 8pt;
                 line-height: 0.5px;
-
         }
         """)
 
         self.transcript_Layout.addWidget(self.transcript)
-
         self.userLayout = QtWidgets.QHBoxLayout()
         self.mainLayout.addLayout(self.userLayout)
         self.setLayout(self.mainLayout)
@@ -168,7 +147,11 @@ dP     dP `88888P'  Y88888P' `88888P' `88888P8 `88888P'
         self.mainLayout.addLayout(self.codeLayout)
 
         self.codescript = QtWidgets.QTextEdit()
-        self.codescript.setReadOnly(True)
+        self.codescript.setText("")
+        # เชื่อมต่อสัญญาณ textChanged ไปยังเมธอด (Slot) ที่ชื่อ on_code_changed
+        #self.codescript.textChanged.connect(self.runCode)
+
+        #self.codescript.setReadOnly(True)
         self.codescript.setStyleSheet("""
             QTextEdit {
                 font-family: Chakra Petch ;
@@ -178,7 +161,6 @@ dP     dP `88888P'  Y88888P' `88888P' `88888P8 `88888P'
                 padding: 6px;                 /* ระยะห่างขอบ */
                 font-size: 8pt;
                 line-height: 0.5px;
-
         }
         """)
         self.codeLayout.addWidget(self.codescript)
@@ -217,9 +199,10 @@ dP     dP `88888P'  Y88888P' `88888P' `88888P8 `88888P'
         self.closeButton.clicked.connect(self.close)       
         self.closeBtLayout.addStretch()
 
-        # ปุ่ม Clear Button ----------------------------------------
-        self.clearButton = QtWidgets.QPushButton('Clear')
-        self.clearButton.setStyleSheet(
+        # ปุ่ม Save Button ----------------------------------------
+        self.saveButton = QtWidgets.QPushButton('save')
+        self.saveButton.clicked.connect(self.saveCode)  
+        self.saveButton.setStyleSheet(
             '''
                 QPushButton {
                     background-color: #293B31;
@@ -237,8 +220,8 @@ dP     dP `88888P'  Y88888P' `88888P' `88888P8 `88888P'
                     background-color: #0EF065;
                 }
             ''')
-        self.buttonLayout.addWidget(self.clearButton)
-
+        self.buttonLayout.addWidget(self.saveButton)
+             
         # ปุ่ม Run Button ----------------------------------------
         self.runButton = QtWidgets.QPushButton('RunCode')
         self.runButton.setStyleSheet(
@@ -262,20 +245,16 @@ dP     dP `88888P'  Y88888P' `88888P' `88888P8 `88888P'
         self.runButton.clicked.connect(self.runCode)
         self.buttonLayout.addWidget(self.runButton)
 
-
-
     def onClickRequestResFromAI(self): 
         userInput = self.inputLineEdit.text()
         aiReq.requestResFromAI(userInput)
         
     def _append(self, who, text):
 
-
         self.transcript.append(f"[{who}]")
         self.transcript.append(text)
         self.transcript.append("")
         #aiReq.requestResFromAI(userInput)
-
 
     def on_send(self, *arg):
         user_Label = "You"
@@ -297,12 +276,17 @@ dP     dP `88888P'  Y88888P' `88888P' `88888P8 `88888P'
         #code_res ไปอยู่ใน self เพื่อให้ทำงานข้าม def ได้
 
         self.code_res = aiReq.codeRequest(resText)
-        self.codescript.append(self.code_res)
-        
+        self.codescript.setText(self.code_res)
+        self.newcode = self.codescript.toPlainText()
 
+    def saveCode(self, *args):
+        print("save แล้ว")
+        self.newcode = self.codescript.toPlainText()
+
+        
     def runCode(self,  *arg):
-        exec(self.code_res)
-        print(self.code_res)
+        exec(self.newcode)
+        print(self.newcode)
 
 def run():
     global ui

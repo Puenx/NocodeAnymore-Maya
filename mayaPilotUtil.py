@@ -18,10 +18,10 @@ def requestResFromAI(userInput):
     print(API_KEY)
 
     client = OpenAI(api_key=API_KEY)
-    prompt = userInput
+    prompt = f"Create simple Python code for Maya: {userInput}. Always reply with python code block. Keep code simple & short."
     response = client.responses.create(
-      model="gpt-4o-mini",
-      input=prompt
+      model="gpt-5",
+      input= prompt,
 
   )
     resText = str(response.output_text)
@@ -45,27 +45,3 @@ def codeRequest(resText):
       code_res = "หาโค้ดไม่เจอ กรุณาลองอีกครั้ง"
       
   return code_res
-
-  # ตัวแปร code_res จะเป็นเฉพาะเนื้อโค้ดภายใน code block
-'''
-  completion = client.chat.completions.create(
-      model="gpt-4o-mini",
-      messages=[
-          {"role": "system", "content": "You are a helpful assistant."},
-          {"role": "user", "content": "Hello!"}
-      ]
-  )
-  print(completion.choices[0].message.content)
-
-  response = requests.request("POST", url, headers=headers, data=payload)
-  reqJson = response.json() 
-  print(reqJson)
-  
-  result = reqJson['choices'][0]['message']['content']
-  return result
-  print('\n')
-  print(f"User:\n\t{prompt}\n") 
-  print(f"Ai:\n\t{result}") 
-  
-'''
-  
